@@ -32,6 +32,7 @@ export function ClubFormModal({
   const [formData, setFormData] = useState<ClubFormData>({
     name: '',
     address: '',
+    location: '',
     latitude: undefined,
     longitude: undefined,
   })
@@ -43,6 +44,7 @@ export function ClubFormModal({
       setFormData({
         name: club.name || '',
         address: club.address || '',
+        location: club.location || '',
         latitude: club.latitude,
         longitude: club.longitude,
       })
@@ -50,6 +52,7 @@ export function ClubFormModal({
       setFormData({
         name: '',
         address: '',
+        location: '',
         latitude: undefined,
         longitude: undefined,
       })
@@ -169,16 +172,21 @@ export function ClubFormModal({
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
                 <GooglePlacesAutocompleteV2
-                  value={formData.address}
+                  value={formData.address || ''}
                   onChange={(value) => handleInputChange('address', value)}
                   onPlaceSelect={handlePlaceSelect}
                   className="pl-10"
                   placeholder="Rechercher une adresse (ville, région, adresse complète...)"
                 />
               </div>
+              {formData.location && (
+                <p className="text-sm text-green-600 font-medium">
+                  📍 Localisation: {formData.location}
+                </p>
+              )}
               {formData.latitude && formData.longitude && (
                 <p className="text-xs text-muted-foreground">
-                  📍 Coordonnées: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+                  Coordonnées: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
                 </p>
               )}
             </div>

@@ -31,15 +31,27 @@ export async function createClub(clubData: CreateClubData): Promise<Club> {
 export async function updateClub(clubData: UpdateClubData): Promise<Club> {
   const { id, ...updateData } = clubData
 
+  // Ensure location is not empty or null since it's required in the database
+  const cleanedUpdateData = {
+    ...updateData,
+    ...(updateData.location !== undefined && {
+      location: updateData.location || 'Non spécifié'
+    })
+  }
+
   const { data, error } = await supabase
     .from('clubs')
-    .update(updateData)
+    .update(cleanedUpdateData)
     .eq('id', id)
     .select()
-    .single()
+    .maybeSingle()
 
   if (error) {
     throw new Error(`Erreur lors de la mise à jour du club: ${error.message}`)
+  }
+
+  if (!data) {
+    throw new Error(`Club avec l'ID ${id} non trouvé`)
   }
 
   return data

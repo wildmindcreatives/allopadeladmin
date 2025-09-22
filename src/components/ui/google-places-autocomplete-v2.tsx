@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 declare global {
@@ -29,7 +28,7 @@ export function GooglePlacesAutocompleteV2({
 }: GooglePlacesAutocompleteV2Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   // const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [, setIsLoaded] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isApiLoading, setIsApiLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([])
@@ -155,24 +154,7 @@ export function GooglePlacesAutocompleteV2({
     }
   }
 
-  // Test the service
-  const testService = () => {
-    if (!serviceRef.current) {
-      console.error('Service not initialized')
-      return
-    }
-
-    serviceRef.current.getPlacePredictions(
-      {
-        input: 'Paris',
-        componentRestrictions: { country: 'fr' },
-        types: ['geocode']
-      },
-      (predictions, status) => {
-        console.log('Test - Status:', status, 'Predictions:', predictions)
-      }
-    )
-  }
+  // Test service removed to avoid lint warnings
 
   return (
     <div className="space-y-2 relative">

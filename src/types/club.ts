@@ -1,18 +1,23 @@
 export interface Club {
   id: string
   name: string
-  location?: string
+  location: string
   address?: string
+  phone?: string
+  email?: string
   latitude?: number
   longitude?: number
+  member_count?: number
   created_at: string
   updated_at: string
 }
 
 export interface ClubFormData {
   name: string
-  address: string
-  location?: string
+  location: string
+  address?: string
+  phone?: string
+  email?: string
   latitude?: number
   longitude?: number
 }
