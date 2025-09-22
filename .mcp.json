@@ -1,0 +1,15 @@
+{
+    "mcpServers": {
+      "supabase-92y709-54": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "mcp-remote",
+          "https://mcp.composio.dev/partner/composio/supabase/mcp?customerId=58e269db-17ea-4925-9a44-e50012fe1887&agent=claude"
+        ],
+        "env": {
+          "npm_config_yes": "true"
+        }
+      }
+    }
+  }

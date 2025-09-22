@@ -4,17 +4,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/AuthContext'
-import { Eye, EyeOff, Mail, Lock, LogIn, UserPlus } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const { signIn, signUp } = useAuth()
+  const { signIn } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,14 +21,10 @@ export function LoginForm() {
     setError('')
 
     try {
-      const { error } = isSignUp
-        ? await signUp(email, password)
-        : await signIn(email, password)
+      const { error } = await signIn(email, password)
 
       if (error) {
         setError(error.message)
-      } else if (isSignUp) {
-        setError('Check your email for the confirmation link!')
       }
     } catch {
       setError('An unexpected error occurred')
@@ -43,13 +38,10 @@ export function LoginForm() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            {isSignUp ? 'Create Account' : 'Bienvenue'}
+            Bienvenue
           </CardTitle>
           <CardDescription className="text-center">
-            {isSignUp
-              ? 'Enter your details to create a new account'
-              : 'Entrer vos identifiants de connexion pour vous connecter'
-            }
+            Entrer vos identifiants de connexion pour vous connecter
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,8 +109,8 @@ export function LoginForm() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  {isSignUp ? <UserPlus className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
-                  {isSignUp ? 'Create Account' : 'Se connecter'}
+                  <LogIn className="h-4 w-4" />
+                  Se connecter
                 </div>
               )}
             </Button>
