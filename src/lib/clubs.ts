@@ -15,17 +15,40 @@ export async function getClubs(): Promise<Club[]> {
 }
 
 export async function createClub(clubData: CreateClubData): Promise<Club> {
-  const { data, error } = await supabase
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    throw new Error('Utilisateur non authentifié')
+  }
+
+  // Create the club
+  const { data: clubResult, error: clubError } = await supabase
     .from('clubs')
     .insert([clubData])
     .select()
     .single()
 
-  if (error) {
-    throw new Error(`Erreur lors de la création du club: ${error.message}`)
+  if (clubError) {
+    throw new Error(`Erreur lors de la création du club: ${clubError.message}`)
   }
 
-  return data
+  // Add the creator as owner in club_members table
+  const { error: memberError } = await supabase
+    .from('club_members')
+    .insert([{
+      club_id: clubResult.id,
+      user_id: user.id,
+      role: 'owner',
+      status: 'active'
+    }])
+
+  if (memberError) {
+    console.error('Failed to add creator as club owner:', memberError)
+    // Don't throw error here as the club was created successfully
+    // We could also delete the club if this fails, depending on requirements
+  }
+
+  return clubResult
 }
 
 export async function updateClub(clubData: UpdateClubData): Promise<Club> {
