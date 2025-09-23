@@ -133,7 +133,6 @@ export function GooglePlacesAutocompleteV2({
 
   // Handle suggestion selection
   const handleSuggestionClick = (prediction: google.maps.places.AutocompletePrediction) => {
-    onChange(prediction.description)
     setShowSuggestions(false)
 
     // Get place details
@@ -142,7 +141,7 @@ export function GooglePlacesAutocompleteV2({
       service.getDetails(
         {
           placeId: prediction.place_id,
-          fields: ['formatted_address', 'geometry', 'name', 'place_id']
+          fields: ['formatted_address', 'geometry', 'name', 'place_id', 'address_components']
         },
         (place, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && place && onPlaceSelect) {

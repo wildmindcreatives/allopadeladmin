@@ -31,7 +31,6 @@ export function ClubFormModal({
 }: ClubFormModalProps) {
   const [formData, setFormData] = useState<ClubFormData>({
     name: '',
-    address: '',
     location: '',
     latitude: undefined,
     longitude: undefined,
@@ -43,7 +42,6 @@ export function ClubFormModal({
     if (club) {
       setFormData({
         name: club.name || '',
-        address: club.address || '',
         location: club.location || '',
         latitude: club.latitude,
         longitude: club.longitude,
@@ -51,7 +49,6 @@ export function ClubFormModal({
     } else {
       setFormData({
         name: '',
-        address: '',
         location: '',
         latitude: undefined,
         longitude: undefined,
@@ -103,9 +100,13 @@ export function ClubFormModal({
       let city = ''
       let country = ''
 
+      console.log('Google Places result:', place)
+      console.log('Address components:', place.address_components)
+
       if (place.address_components) {
         for (const component of place.address_components) {
           const types = component.types
+          console.log('Component:', component.long_name, 'Types:', types)
 
           if (types.includes('locality')) {
             city = component.long_name
@@ -119,8 +120,17 @@ export function ClubFormModal({
         }
       }
 
+      console.log('Extracted city:', city, 'country:', country)
+
       // Format location as "City, Country"
-      const location = city && country ? `${city}, ${country}` : ''
+      let location = city && country ? `${city}, ${country}` : ''
+
+      // Fallback: if we couldn't extract city/country, use formatted_address
+      if (!location && place.formatted_address) {
+        location = place.formatted_address
+      }
+
+      console.log('Final location string:', location)
 
       setFormData(prev => ({
         ...prev,
@@ -166,17 +176,17 @@ export function ClubFormModal({
               {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
             </div>
 
-            {/* Adresse avec autocomplete Google */}
+            {/* Localisation avec autocomplete Google */}
             <div className="space-y-2">
-              <Label htmlFor="address">Adresse</Label>
+              <Label htmlFor="location">Localisation</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
                 <GooglePlacesAutocompleteV2
-                  value={formData.address || ''}
-                  onChange={(value) => handleInputChange('address', value)}
+                  value={formData.location || ''}
+                  onChange={(value) => handleInputChange('location', value)}
                   onPlaceSelect={handlePlaceSelect}
                   className="pl-10"
-                  placeholder="Rechercher une adresse (ville, région, adresse complète...)"
+                  placeholder="Rechercher une ville ou un pays..."
                 />
               </div>
               {formData.location && (

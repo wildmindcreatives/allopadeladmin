@@ -15,7 +15,6 @@ export interface Club {
 export interface ClubFormData {
   name: string
   location: string
-  address?: string
   phone?: string
   email?: string
   latitude?: number
