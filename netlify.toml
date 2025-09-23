@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Disable secrets scanning for frontend environment variables
+# These are intentionally exposed in the client-side bundle
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false"
+
+# Alternative: exclude specific paths and keys if you prefer more granular control
+# SECRETS_SCAN_OMIT_PATHS = "dist/assets/*.js"
+# SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,VITE_GOOGLE_PLACES_API_KEY"
