@@ -97,7 +97,7 @@ export function Dashboard() {
             <div className="flex items-center min-w-0 flex-1">
               <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
               <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
-                Gestion des Clubs
+                Gestion d'AlloPadel
               </h1>
             </div>
             <Button
