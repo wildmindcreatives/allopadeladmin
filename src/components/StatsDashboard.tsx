@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getStatistics, type StatisticsData } from '@/lib/statistics'
 import { Card } from '@/components/ui/card'
-import { Users, MapPin, Calendar, Trophy, TrendingUp, Clock } from 'lucide-react'
+import { Users, MapPin, Calendar, Trophy, TrendingUp } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface StatCardProps {
@@ -42,12 +42,12 @@ function StatCard({ title, value, icon, trend, color = 'blue' }: StatCardProps) 
 
 interface ChartProps {
   title: string
-  data: Array<{ name?: string; month?: string; club_name?: string; status?: string; count: number; member_count?: number }>
+  data: Array<{ name?: string; month?: string; club_name?: string; status?: string; count?: number; member_count?: number }>
   type: 'bar' | 'pie' | 'line'
   color?: string
 }
 
-function SimpleChart({ title, data, type, color = 'blue' }: ChartProps) {
+function SimpleChart({ title, data, type }: ChartProps) {
   const maxValue = Math.max(...data.map(d => d.count || d.member_count || 0))
 
   const getBarColor = (index: number) => {
