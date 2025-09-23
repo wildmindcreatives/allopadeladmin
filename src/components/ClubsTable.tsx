@@ -78,89 +78,151 @@ export function ClubsTable({ clubs, onEdit, onDelete, loading = false }: ClubsTa
 
   return (
     <>
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nom</TableHead>
-              <TableHead>Localisation</TableHead>
-              <TableHead>Adresse</TableHead>
-              <TableHead>Coordonnées</TableHead>
-              <TableHead>Date de création</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {clubs.map((club) => (
-              <TableRow key={club.id}>
-                <TableCell>
-                  <div className="font-medium">{club.name}</div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    {club.location ? (
+      {/* Mobile Card Layout */}
+      <div className="block sm:hidden">
+        <div className="space-y-4">
+          {clubs.map((club) => (
+            <div key={club.id} className="border rounded-lg p-4 bg-white">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="font-semibold text-lg text-gray-900 flex-1 mr-2">
+                  {club.name}
+                </h3>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onEdit(club)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteClick(club)}
+                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                {club.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span className="text-muted-foreground">{club.location}</span>
+                  </div>
+                )}
+
+                {club.latitude && club.longitude && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">📍</span>
+                    <span className="text-xs text-muted-foreground font-mono">
+                      {club.latitude.toFixed(4)}, {club.longitude.toFixed(4)}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 pt-1 border-t">
+                  <span className="text-xs text-muted-foreground">
+                    Créé le {formatDate(club.created_at)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop Table Layout */}
+      <div className="hidden sm:block">
+        <div className="border rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[120px]">Nom</TableHead>
+                  <TableHead className="min-w-[120px]">Localisation</TableHead>
+                  <TableHead className="min-w-[150px]">Adresse</TableHead>
+                  <TableHead className="min-w-[120px]">Coordonnées</TableHead>
+                  <TableHead className="min-w-[110px]">Date de création</TableHead>
+                  <TableHead className="text-right min-w-[100px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {clubs.map((club) => (
+                  <TableRow key={club.id}>
+                    <TableCell>
+                      <div className="font-medium">{club.name}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {club.location ? (
+                          <div className="text-sm text-muted-foreground">
+                            {club.location}
+                          </div>
+                        ) : (
+                          <div className="text-xs text-muted-foreground">
+                            Non spécifiée
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {club.address && (
+                          <div className="flex items-center gap-1 text-sm">
+                            <MapPin className="h-3 w-3" />
+                            <span className="truncate max-w-xs">{club.address}</span>
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {club.latitude && club.longitude ? (
+                          <div className="text-xs text-muted-foreground font-mono">
+                            📍 {club.latitude.toFixed(4)}, {club.longitude.toFixed(4)}
+                          </div>
+                        ) : (
+                          <div className="text-xs text-muted-foreground">
+                            Aucune coordonnée
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
                       <div className="text-sm text-muted-foreground">
-                        {club.location}
+                        {formatDate(club.created_at)}
                       </div>
-                    ) : (
-                      <div className="text-xs text-muted-foreground">
-                        Non spécifiée
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => onEdit(club)}
+                          className="h-8 w-8"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => handleDeleteClick(club)}
+                          className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    {club.address && (
-                      <div className="flex items-center gap-1 text-sm">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate max-w-xs">{club.address}</span>
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="space-y-1">
-                    {club.latitude && club.longitude ? (
-                      <div className="text-xs text-muted-foreground font-mono">
-                        📍 {club.latitude.toFixed(4)}, {club.longitude.toFixed(4)}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-muted-foreground">
-                        Aucune coordonnée
-                      </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm text-muted-foreground">
-                    {formatDate(club.created_at)}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => onEdit(club)}
-                      className="h-8 w-8"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => handleDeleteClick(club)}
-                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
 
       {/* Delete Confirmation Dialog */}

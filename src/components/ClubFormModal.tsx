@@ -143,7 +143,7 @@ export function ClubFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-2xl max-h-[90vh] mx-4 sm:mx-auto overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
@@ -157,18 +157,18 @@ export function ClubFormModal({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           <div className="space-y-4">
             {/* Nom du club */}
             <div className="space-y-2">
-              <Label htmlFor="name">Nom du club *</Label>
+              <Label htmlFor="name" className="text-sm font-medium">Nom du club *</Label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-11"
                   placeholder="Nom du club"
                   required
                 />
@@ -178,21 +178,23 @@ export function ClubFormModal({
 
             {/* Localisation avec autocomplete Google */}
             <div className="space-y-2">
-              <Label htmlFor="location">Localisation</Label>
+              <Label htmlFor="location" className="text-sm font-medium">Localisation</Label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
                 <GooglePlacesAutocompleteV2
                   value={formData.location || ''}
                   onChange={(value) => handleInputChange('location', value)}
                   onPlaceSelect={handlePlaceSelect}
-                  className="pl-10"
+                  className="pl-10 h-11"
                   placeholder="Rechercher une ville ou un pays..."
                 />
               </div>
               {formData.location && (
-                <p className="text-sm text-green-600 font-medium">
-                  📍 Localisation: {formData.location}
-                </p>
+                <div className="p-3 bg-green-50 rounded-md border border-green-200">
+                  <p className="text-sm text-green-700 font-medium flex items-center gap-2">
+                    📍 <span>Localisation: {formData.location}</span>
+                  </p>
+                </div>
               )}
               {formData.latitude && formData.longitude && (
                 <p className="text-xs text-muted-foreground">
@@ -202,20 +204,21 @@ export function ClubFormModal({
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="w-full sm:w-auto order-2 sm:order-1"
             >
               Annuler
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto order-1 sm:order-2">
               {loading ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  {club ? 'Modification...' : 'Création...'}
+                  <span>{club ? 'Modification...' : 'Création...'}</span>
                 </div>
               ) : (
                 club ? 'Modifier' : 'Créer'
