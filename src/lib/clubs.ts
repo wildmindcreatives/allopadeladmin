@@ -81,12 +81,104 @@ export async function updateClub(clubData: UpdateClubData): Promise<Club> {
 }
 
 export async function deleteClub(id: string): Promise<void> {
-  const { error } = await supabase
+  // Check if user is authenticated
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    throw new Error('Utilisateur non authentifié')
+  }
+
+  // Use RPC function to delete club and all related data
+  const { error: rpcError } = await supabase.rpc('delete_club_cascade', {
+    club_id: id
+  })
+
+  if (rpcError) {
+    // Fallback to manual deletion if RPC doesn't exist
+    await deleteClubManual(id, user.id)
+  }
+}
+
+async function deleteClubManual(clubId: string, userId: string): Promise<void> {
+  // Step 1: Remove club references from profiles (set preferred_club_id to NULL)
+  // We'll use an RPC function or handle it differently since RLS might block this
+  const { error: profilesError } = await supabase.rpc('nullify_preferred_club', {
+    target_club_id: clubId
+  })
+
+  // If RPC doesn't exist, try direct update (might fail due to RLS)
+  if (profilesError) {
+    console.warn('RPC nullify_preferred_club not available, trying direct update:', profilesError.message)
+    const { error: directUpdateError } = await supabase
+      .from('profiles')
+      .update({ preferred_club_id: null })
+      .eq('preferred_club_id', clubId)
+
+    if (directUpdateError) {
+      console.warn('Could not update all profiles, continuing with deletion:', directUpdateError.message)
+      // Don't throw error here, the foreign key constraint will be handled by the database
+    }
+  }
+
+  // Step 2: Delete from user_clubs table
+  const { error: userClubsError } = await supabase
+    .from('user_clubs')
+    .delete()
+    .eq('club_id', clubId)
+
+  if (userClubsError) {
+    throw new Error(`Erreur lors de la suppression des relations utilisateur-club: ${userClubsError.message}`)
+  }
+
+  // Step 3: Get all matches for this club
+  const { data: matches, error: matchesSelectError } = await supabase
+    .from('matches')
+    .select('id')
+    .eq('club_id', clubId)
+
+  if (matchesSelectError) {
+    throw new Error(`Erreur lors de la récupération des matchs: ${matchesSelectError.message}`)
+  }
+
+  // Step 4: Delete match participants for all matches of this club
+  if (matches && matches.length > 0) {
+    const matchIds = matches.map(match => match.id)
+    const { error: participantsError } = await supabase
+      .from('match_participants')
+      .delete()
+      .in('match_id', matchIds)
+
+    if (participantsError) {
+      throw new Error(`Erreur lors de la suppression des participants aux matchs: ${participantsError.message}`)
+    }
+  }
+
+  // Step 5: Delete all matches for this club
+  const { error: matchesError } = await supabase
+    .from('matches')
+    .delete()
+    .eq('club_id', clubId)
+
+  if (matchesError) {
+    throw new Error(`Erreur lors de la suppression des matchs: ${matchesError.message}`)
+  }
+
+  // Step 6: Delete all club members
+  const { error: clubMembersError } = await supabase
+    .from('club_members')
+    .delete()
+    .eq('club_id', clubId)
+
+  if (clubMembersError) {
+    throw new Error(`Erreur lors de la suppression des membres du club: ${clubMembersError.message}`)
+  }
+
+  // Step 7: Finally, delete the club itself
+  const { error: clubError } = await supabase
     .from('clubs')
     .delete()
-    .eq('id', id)
+    .eq('id', clubId)
 
-  if (error) {
-    throw new Error(`Erreur lors de la suppression du club: ${error.message}`)
+  if (clubError) {
+    throw new Error(`Erreur lors de la suppression du club: ${clubError.message}`)
   }
 }

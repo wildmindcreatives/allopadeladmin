@@ -232,6 +232,7 @@ export function ClubsTable({ clubs, onEdit, onDelete, loading = false }: ClubsTa
             <DialogTitle>Confirmer la suppression</DialogTitle>
             <DialogDescription>
               Êtes-vous sûr de vouloir supprimer le club "{clubToDelete?.name}" ?
+              Cette action supprimera également tous les matchs associés et leurs participants.
               Cette action est irréversible.
             </DialogDescription>
           </DialogHeader>
