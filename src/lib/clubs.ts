@@ -94,11 +94,11 @@ export async function deleteClub(id: string): Promise<void> {
 
   if (rpcError) {
     // Fallback to manual deletion if RPC doesn't exist
-    await deleteClubManual(id, user.id)
+    await deleteClubManual(id)
   }
 }
 
-async function deleteClubManual(clubId: string, userId: string): Promise<void> {
+async function deleteClubManual(clubId: string): Promise<void> {
   // Step 1: Remove club references from profiles (set preferred_club_id to NULL)
   // We'll use an RPC function or handle it differently since RLS might block this
   const { error: profilesError } = await supabase.rpc('nullify_preferred_club', {
